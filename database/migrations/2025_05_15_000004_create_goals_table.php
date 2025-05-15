@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateGoalsTable extends Migration
+{
+    public function up()
+    {
+        Schema::create('goals', function (Blueprint $table) {
+            $table->increments('goalsid');
+            $table->integer('userid')->unsigned();
+            $table->integer('accountid')->unsigned()->nullable();
+            $table->string('name');
+            $table->decimal('balance', 10, 2);
+            $table->decimal('amount', 10, 2);
+            $table->decimal('deposit', 10, 2);
+            $table->date('deadline');
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('goals');
+    }
+}

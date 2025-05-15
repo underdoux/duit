@@ -1,0 +1,25 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateSubcategoryTable extends Migration
+{
+    public function up()
+    {
+        Schema::create('subcategory', function (Blueprint $table) {
+            $table->increments('subcategoryid');
+            $table->integer('categoryid')->unsigned();
+            $table->string('name');
+            $table->integer('type');
+            $table->text('description')->nullable();
+            $table->index('categoryid', 'deletesubquery');
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('subcategory');
+    }
+}
