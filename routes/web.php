@@ -11,179 +11,215 @@
 |
 */
 
+Route::redirect('/', '/duit');
+
 Route::prefix('duit')->group(function () {
 
-Route::get('/','HomeController@index');
-//route to url access
-Route::get('/account','AccountController@index');
-Route::get('/account/index','AccountController@index');
-Route::get('/account/detail/{id}','AccountController@detail');
-Route::get('/account/getdatadetail/{id}','AccountController@getdatadetail');
-Route::get('/account/accountbalancebymonth/{id}','AccountController@accountbalancebymonth');
-Route::get('/account/getaccounttransaction/{id}','AccountController@getaccounttransaction');
-Route::get('/account/getdata','AccountController@getdata');
-Route::post('/account/save','AccountController@save');
-Route::post('/account/delete','AccountController@delete');
-Route::post('/account/getedit','AccountController@getedit');
-Route::post('/account/edit','AccountController@saveedit');
-Route::resource('account','AccountController');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
 
-Route::get('/income','IncomeTransactionController@dashboard');
-Route::get('/income/index','IncomeTransactionController@dashboard');
-Route::get('/income/getdata','IncomeTransactionController@getdata');
-Route::get('/income/getdatacalendar','IncomeTransactionController@getdatacalendar');
-Route::get('/income/gettotal','IncomeTransactionController@total');
-Route::post('/income/save','IncomeTransactionController@save');
-Route::post('/income/delete','IncomeTransactionController@delete');
-Route::post('/income/getedit','IncomeTransactionController@getedit');
-Route::post('/income/edit','IncomeTransactionController@saveedit');
-Route::post('/income/gettotalfilterdate','IncomeTransactionController@gettotalfilterdate');
-
-Route::get('/upcomingincome','IncomeTransactionController@upcomingincome');
-Route::get('/upcomingincome/index','IncomeTransactionController@upcomingincome');
-Route::get('/upcomingincome/getdataupcoming','IncomeTransactionController@getdataupcoming');
-Route::post('/upcomingincome/saveupcoming','IncomeTransactionController@saveupcoming');
-Route::post('/upcomingincome/getedit','IncomeTransactionController@geteditupcoming');
-Route::post('/upcomingincome/edit','IncomeTransactionController@saveeditupcoming');
-Route::get('/upcomingincome/gettotal','IncomeTransactionController@totalupcoming');
-Route::post('/upcomingincome/dopay','IncomeTransactionController@dopay');
-
-Route::get('/upcomingexpense','ExpenseTransactionController@upcomingincome');
-Route::get('/upcomingexpense/index','ExpenseTransactionController@upcomingincome');
-Route::get('/upcomingexpense/getdataupcoming','ExpenseTransactionController@getdataupcoming');
-Route::post('/upcomingexpense/saveupcoming','ExpenseTransactionController@saveupcoming');
-Route::post('/upcomingexpense/getedit','ExpenseTransactionController@geteditupcoming');
-Route::post('/upcomingexpense/edit','ExpenseTransactionController@saveeditupcoming');
-Route::get('/upcomingexpense/gettotal','ExpenseTransactionController@totalupcoming');
-Route::post('/upcomingexpense/dopay','ExpenseTransactionController@dopay');
-
-Route::get('/reports/allreports','ReportsController@allreports');
-Route::get('/reports/income','ReportsController@incomereports');
-Route::get('/reports/upcomingincome','ReportsController@upcomingincomereports');
-Route::get('/reports/expense','ReportsController@expensereports');
-Route::get('/reports/upcomingexpense','ReportsController@upcomingexpensereports');
-Route::get('/reports/gettransactionsupcoming','ReportsController@gettransactionsupcoming');
-Route::get('/reports/incomevsexpense','ReportsController@incomevsexpensereports');
-Route::get('/reports/gettransactions','ReportsController@gettransactions');
-Route::get('/reports/getaccounttransaction','ReportsController@getaccounttransaction');
-Route::get('/reports/incomemonth','ReportsController@incomemonth');
-Route::get('/reports/expensemonth','ReportsController@expensemonth');
-Route::get('/reports/getincomemonthly','ReportsController@getincomemonthly');
-Route::get('/reports/getexpensemonthly','ReportsController@getexpensemonthly');
-Route::get('/reports/getbalance','ReportsController@getbalance');
-Route::resource('reports','ReportsController');
-
-Route::get('/expense','ExpenseTransactionController@dashboard');
-Route::get('/expense/index','ExpenseTransactionController@dashboard');
-Route::get('/expense/getdata','ExpenseTransactionController@getdata');
-Route::get('/expense/getdatacalendar','ExpenseTransactionController@getdatacalendar');
-Route::get('/expense/gettotal','ExpenseTransactionController@total');
-Route::post('/expense/save','ExpenseTransactionController@save');
-Route::post('/expense/delete','ExpenseTransactionController@delete');
-Route::post('/expense/getedit','ExpenseTransactionController@getedit');
-Route::post('/expense/edit','ExpenseTransactionController@saveedit');
-
-Route::get('/upcomingexpense','ExpenseTransactionController@upcomingexpense');
-Route::get('/upcomingexpense/index','ExpenseTransactionController@upcomingexpense');
-
-Route::get('/incomecategory','CategoryController@incomeindex');
-Route::get('/incomecategory/index','CategoryController@incomeindex');
-Route::get('/incomecategory/getdata','CategoryController@incomegetdata');
-Route::post('/incomecategory/save','CategoryController@incomesave');
-Route::post('/incomecategory/delete','CategoryController@incomedelete');
-Route::post('/incomecategory/getedit','CategoryController@incomegetedit');
-Route::post('/incomecategory/edit','CategoryController@incomesaveedit');
-
-Route::get('/incomecategory/subgetdata','CategoryController@incomesubgetdata');
-Route::post('/incomecategory/subgetdatabycat','CategoryController@incomesubcategorybycat');
-Route::post('/incomecategory/subsave','CategoryController@incomesubsave');
-Route::post('/incomecategory/subdelete','CategoryController@incomedelete');
-Route::post('/incomecategory/subgetedit','CategoryController@incomesubgetedit');
-Route::post('/incomecategory/subedit','CategoryController@incomesubsaveedit');
-
-Route::get('/expensecategory','ExpenseCategoryController@expenseindex');
-Route::get('/expensecategory/index','ExpenseCategoryController@expenseindex');
-Route::get('/expensecategory/getdata','ExpenseCategoryController@expensegetdata');
-Route::post('/expensecategory/save','ExpenseCategoryController@expensesave');
-Route::post('/expensecategory/delete','ExpenseTransactionController@expensedelete');
-Route::post('/expensecategory/getedit','ExpenseCategoryController@expensegetedit');
-Route::post('/expensecategory/edit','ExpenseCategoryController@expensesaveedit');
-
-Route::get('/expensecategory/subgetdata','ExpenseTransactionController@expensesubgetdata');
-Route::post('/expensecategory/subgetdatabycat','ExpenseCategoryController@expensesubcategorybycat');
-Route::post('/expensecategory/subsave','ExpenseCategoryController@expensesubsave');
-Route::post('/expensecategory/subdelete','ExpenseTransactionController@expensesubdelete');
-Route::post('/expensecategory/subgetedit','ExpenseTransactionController@expensesubgetedit');
-Route::post('/expensecategory/subedit','ExpenseTransactionController@expensesaveedit');
-
-Route::get('/budget','BudgetController@index');
-Route::get('/budget/index','BudgetController@index');
-Route::get('/budget/getdata','BudgetController@getdata');
-Route::post('/budget/save','BudgetController@save');
-Route::post('/budget/delete','BudgetController@deleteitem');
-Route::post('/budget/getedit','BudgetController@budgetgetedit');
-Route::post('/budget/edit','BudgetController@saveedit');
-Route::post('/budget/gettransactionbydate','BudgetController@gettransactionbydate');
-Route::resource('budget','BudgetController');
-
-Route::get('/goals','GoalController@index');
-Route::get('/goals/index','GoalController@index');
-Route::get('/goals/getdata','GoalController@getdata');
-Route::post('/goals/save','GoalController@save');
-Route::post('/goals/delete','GoalController@deleteitem');
-Route::post('/goals/getedit','GoalController@goalsgetedit');
-Route::post('/goals/edit','GoalController@saveedit');
-Route::post('/goals/deposit','GoalController@deposit');
-Route::resource('goals','GoalController');
-
-Route::get('/calendar/index','CalendarController@index');
-
-Route::resource('calendar','CalendarController');
-
-Route::get('/transaction','IncomeTransactionController@index');
-Route::get('/transaction/index','IncomeTransactionController@index');
-Route::post('/transaction/saveincome','IncomeTransactionController@saveincome');
-Route::post('/transaction/saveexpense','ExpenseTransactionController@saveexpense');
-Route::get('/transaction/downloadcsv','IncomeTransactionController@downloadcsv');
-Route::post('/transaction/importcsv','IncomeTransactionController@importcsv');
-Route::post('/transaction/importcsv2','ExpenseTransactionController@importcsv');
-
-Route::get('/settings/application','SettingController@applicationindex');
-Route::get('/settings/getapplication','SettingController@getapplication');
-Route::post('/settings/saveapplication','SettingController@saveapplication');
-Route::post('/settings/insertrole','SettingController@insertrole');
-Route::get('/settings/getrole','SettingController@getrole');
-Route::get('/settings/getprofile','UserController@getprofile');
-Route::get('/settings/profile','UserController@profile');
-Route::get('/settings/allusers','UserController@allusers');
-Route::get('/settings/getuser','UserController@getuser');
-Route::post('/settings/getuseredit','UserController@getedit');
-Route::get('/settings/totalusers','UserController@totalusers');
-Route::post('/settings/saveuser','UserController@save');
-Route::post('/settings/deleteuser','UserController@delete');
-Route::post('/settings/saveprofile','UserController@saveprofile');
-Route::post('/settings/saveprofilebyadmin','UserController@saveprofilebyadmin');
-Route::resource('settings','SettingController');
-
-Route::get('logout', 'Auth\LoginController@logout');
-Route::get('login', 'Auth\LoginController@showLoginForm');
-Route::post('login', 'Auth\LoginController@authenticate');
-Route::post('login', [ 'as' => 'login', 'uses' => 'Auth\LoginController@authenticate']);
-
-Route::get('/home/incomevsexpense','HomeController@incomevsexpense');
-Route::get('/home/totalbalance','HomeController@totalbalance');
-Route::get('/home/expensebycategory','HomeController@expensebycategory');
-Route::get('/home/incomebycategory','HomeController@incomebycategory');
-Route::get('/home/expensebycategoryyearly','HomeController@expensebycategoryyearly');
-Route::get('/home/incomebycategoryyearly','HomeController@incomebycategoryyearly');
-Route::get('/home/upcomingexpensebycategoryyearly','HomeController@upcomingexpensebycategoryyearly');
-Route::get('/home/upcomingincomebycategoryyearly','HomeController@upcomingincomebycategoryyearly');
-Route::get('/home/budgetlist','HomeController@budgetlist');
-Route::get('/home/accountbalance','HomeController@accountbalance');
-Route::get('/home/latestincome','HomeController@latestincome');
-Route::get('/home/latestexpense','HomeController@latestexpense');
-Route::resource('home','HomeController');
-
-Route::get('/home', 'HomeController@index')->name('home');
-
+Route::controller(App\Http\Controllers\AccountController::class)->group(function () {
+    Route::get('/account', 'index');
+    Route::get('/account/index', 'index');
+    Route::get('/account/detail/{id}', 'detail');
+    Route::get('/account/getdatadetail/{id}', 'getdatadetail');
+    Route::get('/account/accountbalancebymonth/{id}', 'accountbalancebymonth');
+    Route::get('/account/getaccounttransaction/{id}', 'getaccounttransaction');
+    Route::get('/account/getdata', 'getdata');
+    Route::post('/account/save', 'save');
+    Route::post('/account/delete', 'delete');
+    Route::post('/account/getedit', 'getedit');
+    Route::post('/account/edit', 'saveedit');
 });
+Route::resource('account', App\Http\Controllers\AccountController::class);
+
+Route::controller(App\Http\Controllers\IncomeTransactionController::class)->group(function () {
+    // Income routes
+    Route::get('/income', 'dashboard');
+    Route::get('/income/index', 'dashboard');
+    Route::get('/income/getdata', 'getdata');
+    Route::get('/income/getdatacalendar', 'getdatacalendar');
+    Route::get('/income/gettotal', 'total');
+    Route::post('/income/save', 'save');
+    Route::post('/income/delete', 'delete');
+    Route::post('/income/getedit', 'getedit');
+    Route::post('/income/edit', 'saveedit');
+    Route::post('/income/gettotalfilterdate', 'gettotalfilterdate');
+
+    // Upcoming income routes
+    Route::get('/upcomingincome', 'upcomingincome');
+    Route::get('/upcomingincome/index', 'upcomingincome');
+    Route::get('/upcomingincome/getdataupcoming', 'getdataupcoming');
+    Route::post('/upcomingincome/saveupcoming', 'saveupcoming');
+    Route::post('/upcomingincome/getedit', 'geteditupcoming');
+    Route::post('/upcomingincome/edit', 'saveeditupcoming');
+    Route::get('/upcomingincome/gettotal', 'totalupcoming');
+    Route::post('/upcomingincome/dopay', 'dopay');
+});
+
+Route::controller(App\Http\Controllers\ExpenseTransactionController::class)->group(function () {
+    // Expense routes
+    Route::get('/expense', 'dashboard');
+    Route::get('/expense/index', 'dashboard');
+    Route::get('/expense/getdata', 'getdata');
+    Route::get('/expense/getdatacalendar', 'getdatacalendar');
+    Route::get('/expense/gettotal', 'total');
+    Route::post('/expense/save', 'save');
+    Route::post('/expense/delete', 'delete');
+    Route::post('/expense/getedit', 'getedit');
+    Route::post('/expense/edit', 'saveedit');
+
+    // Upcoming expense routes
+    Route::get('/upcomingexpense', 'upcomingexpense');
+    Route::get('/upcomingexpense/index', 'upcomingexpense');
+    Route::get('/upcomingexpense/getdataupcoming', 'getdataupcoming');
+    Route::post('/upcomingexpense/saveupcoming', 'saveupcoming');
+    Route::post('/upcomingexpense/getedit', 'geteditupcoming');
+    Route::post('/upcomingexpense/edit', 'saveeditupcoming');
+    Route::get('/upcomingexpense/gettotal', 'totalupcoming');
+    Route::post('/upcomingexpense/dopay', 'dopay');
+});
+
+Route::controller(App\Http\Controllers\ReportsController::class)->group(function () {
+    Route::get('/reports/allreports', 'allreports');
+    Route::get('/reports/income', 'incomereports');
+    Route::get('/reports/upcomingincome', 'upcomingincomereports');
+    Route::get('/reports/expense', 'expensereports');
+    Route::get('/reports/upcomingexpense', 'upcomingexpensereports');
+    Route::get('/reports/gettransactionsupcoming', 'gettransactionsupcoming');
+    Route::get('/reports/incomevsexpense', 'incomevsexpensereports');
+    Route::get('/reports/gettransactions', 'gettransactions');
+    Route::get('/reports/getaccounttransaction', 'getaccounttransaction');
+    Route::get('/reports/incomemonth', 'incomemonth');
+    Route::get('/reports/expensemonth', 'expensemonth');
+    Route::get('/reports/getincomemonthly', 'getincomemonthly');
+    Route::get('/reports/getexpensemonthly', 'getexpensemonthly');
+    Route::get('/reports/getbalance', 'getbalance');
+});
+Route::resource('reports', App\Http\Controllers\ReportsController::class);
+
+Route::controller(App\Http\Controllers\CategoryController::class)->group(function () {
+    // Income category routes
+    Route::get('/incomecategory', 'incomeindex');
+    Route::get('/incomecategory/index', 'incomeindex');
+    Route::get('/incomecategory/getdata', 'incomegetdata');
+    Route::post('/incomecategory/save', 'incomesave');
+    Route::post('/incomecategory/delete', 'incomedelete');
+    Route::post('/incomecategory/getedit', 'incomegetedit');
+    Route::post('/incomecategory/edit', 'incomesaveedit');
+
+    // Income subcategory routes
+    Route::get('/incomecategory/subgetdata', 'incomesubgetdata');
+    Route::post('/incomecategory/subgetdatabycat', 'incomesubcategorybycat');
+    Route::post('/incomecategory/subsave', 'incomesubsave');
+    Route::post('/incomecategory/subdelete', 'incomedelete');
+    Route::post('/incomecategory/subgetedit', 'incomesubgetedit');
+    Route::post('/incomecategory/subedit', 'incomesubsaveedit');
+});
+
+Route::controller(App\Http\Controllers\ExpenseCategoryController::class)->group(function () {
+    // Expense category routes
+    Route::get('/expensecategory', 'expenseindex');
+    Route::get('/expensecategory/index', 'expenseindex');
+    Route::get('/expensecategory/getdata', 'expensegetdata');
+    Route::post('/expensecategory/save', 'expensesave');
+    Route::post('/expensecategory/delete', 'expensedelete');
+    Route::post('/expensecategory/getedit', 'expensegetedit');
+    Route::post('/expensecategory/edit', 'expensesaveedit');
+
+    // Expense subcategory routes
+    Route::get('/expensecategory/subgetdata', 'expensesubgetdata');
+    Route::post('/expensecategory/subgetdatabycat', 'expensesubcategorybycat');
+    Route::post('/expensecategory/subsave', 'expensesubsave');
+    Route::post('/expensecategory/subdelete', 'expensesubdelete');
+    Route::post('/expensecategory/subgetedit', 'expensesubgetedit');
+    Route::post('/expensecategory/subedit', 'expensesubsaveedit');
+});
+
+Route::controller(App\Http\Controllers\BudgetController::class)->group(function () {
+    Route::get('/budget', 'index');
+    Route::get('/budget/index', 'index');
+    Route::get('/budget/getdata', 'getdata');
+    Route::post('/budget/save', 'save');
+    Route::post('/budget/delete', 'deleteitem');
+    Route::post('/budget/getedit', 'budgetgetedit');
+    Route::post('/budget/edit', 'saveedit');
+    Route::post('/budget/gettransactionbydate', 'gettransactionbydate');
+});
+Route::resource('budget', App\Http\Controllers\BudgetController::class);
+
+Route::controller(App\Http\Controllers\GoalController::class)->group(function () {
+    Route::get('/goals', 'index');
+    Route::get('/goals/index', 'index');
+    Route::get('/goals/getdata', 'getdata');
+    Route::post('/goals/save', 'save');
+    Route::post('/goals/delete', 'deleteitem');
+    Route::post('/goals/getedit', 'goalsgetedit');
+    Route::post('/goals/edit', 'saveedit');
+    Route::post('/goals/deposit', 'deposit');
+});
+Route::resource('goals', App\Http\Controllers\GoalController::class);
+
+Route::controller(App\Http\Controllers\CalendarController::class)->group(function () {
+    Route::get('/calendar/index', 'index');
+});
+Route::resource('calendar', App\Http\Controllers\CalendarController::class);
+
+Route::controller(App\Http\Controllers\IncomeTransactionController::class)->group(function () {
+    Route::get('/transaction', 'index');
+    Route::get('/transaction/index', 'index');
+    Route::post('/transaction/saveincome', 'saveincome');
+    Route::get('/transaction/downloadcsv', 'downloadcsv');
+    Route::post('/transaction/importcsv', 'importcsv');
+});
+
+Route::controller(App\Http\Controllers\ExpenseTransactionController::class)->group(function () {
+    Route::post('/transaction/saveexpense', 'saveexpense');
+    Route::post('/transaction/importcsv2', 'importcsv');
+});
+
+Route::controller(App\Http\Controllers\SettingController::class)->group(function () {
+    Route::get('/settings/application', 'applicationindex');
+    Route::get('/settings/getapplication', 'getapplication');
+    Route::post('/settings/saveapplication', 'saveapplication');
+    Route::post('/settings/insertrole', 'insertrole');
+    Route::get('/settings/getrole', 'getrole');
+});
+Route::resource('settings', App\Http\Controllers\SettingController::class);
+
+Route::controller(App\Http\Controllers\UserController::class)->group(function () {
+    Route::get('/settings/getprofile', 'getprofile');
+    Route::get('/settings/profile', 'profile');
+    Route::get('/settings/allusers', 'allusers');
+    Route::get('/settings/getuser', 'getuser');
+    Route::post('/settings/getuseredit', 'getedit');
+    Route::get('/settings/totalusers', 'totalusers');
+    Route::post('/settings/saveuser', 'save');
+    Route::post('/settings/deleteuser', 'delete');
+    Route::post('/settings/saveprofile', 'saveprofile');
+    Route::post('/settings/saveprofilebyadmin', 'saveprofilebyadmin');
+});
+
+Route::controller(App\Http\Controllers\Auth\LoginController::class)->group(function () {
+    Route::get('logout', 'logout');
+    Route::get('login', 'showLoginForm')->name('login');
+    Route::post('login', 'authenticate');
+});
+
+Route::controller(App\Http\Controllers\HomeController::class)->group(function () {
+    Route::get('/home', 'index')->name('home');
+    Route::get('/home/incomevsexpense', 'incomevsexpense');
+    Route::get('/home/totalbalance', 'totalbalance');
+    Route::get('/home/expensebycategory', 'expensebycategory');
+    Route::get('/home/incomebycategory', 'incomebycategory');
+    Route::get('/home/expensebycategoryyearly', 'expensebycategoryyearly');
+    Route::get('/home/incomebycategoryyearly', 'incomebycategoryyearly');
+    Route::get('/home/upcomingexpensebycategoryyearly', 'upcomingexpensebycategoryyearly');
+    Route::get('/home/upcomingincomebycategoryyearly', 'upcomingincomebycategoryyearly');
+    Route::get('/home/budgetlist', 'budgetlist');
+    Route::get('/home/accountbalance', 'accountbalance');
+    Route::get('/home/latestincome', 'latestincome');
+    Route::get('/home/latestexpense', 'latestexpense');
+});
+Route::resource('home', App\Http\Controllers\HomeController::class);
+
+}); // End of duit prefix group

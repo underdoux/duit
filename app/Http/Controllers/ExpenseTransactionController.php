@@ -600,49 +600,53 @@ class ExpenseTransactionController extends Controller
 		$userid = Auth::id();
 		$category = SubCategoryModel::pluck('subcategoryid')->toArray();
 		$account = AccountModel::pluck('accountid')->toArray();
+		
 		if($request->hasFile('csvfile')){
 			$this->validate($request, [
 				'csvfile' => 'mimes:csv,txt|max:2048'
 			], $message);
 
 			$path = $request->file('csvfile')->getRealPath();
-			$data = \Excel::load($path)->get();
-
-			if($data->count()){
-				foreach ($data as $key => $value) {
-					$arr[] = [
-						'userid' => $userid,
-						'categoryid' => $value->subcategoryid,
-						'accountid' => $value->accountid,
-						'name' => $value->name,
-						'amount' => $value->amount,
-						'reference' => $value->reference,
-						'transactiondate' => date("Y-m-d", strtotime($value->transactiondate)),
-						'type' => '2',
-						'description' => $value->description
-					];
-
-					// Check if category exists
-					if (!in_array($value->subcategoryid, $category)) {
-						return $res['message'] = '2';
-						exit;
-					}
-
-					// Check if account exists
-					if (!in_array($value->accountid, $account)) {
-						return $res['message'] = '3';
-						exit;
-					}
+			$handle = fopen($path, 'r');
+			$header = fgetcsv($handle); // Get headers
+			$arr = [];
+			
+			while (($row = fgetcsv($handle)) !== false) {
+				$data = array_combine($header, $row);
+				
+				// Check if category exists
+				if (!in_array($data['subcategoryid'], $category)) {
+					fclose($handle);
+					return response(['message' => '2']); // Category doesn't exist
 				}
-				if(!empty($arr)){
-					DB::table('transaction')->insert($arr);
-					$res['message'] = '1';
+
+				// Check if account exists
+				if (!in_array($data['accountid'], $account)) {
+					fclose($handle);
+					return response(['message' => '3']); // Account doesn't exist
 				}
+
+				$arr[] = [
+					'userid' => $userid,
+					'categoryid' => $data['subcategoryid'],
+					'accountid' => $data['accountid'],
+					'name' => $data['name'],
+					'amount' => $data['amount'],
+					'reference' => $data['reference'],
+					'transactiondate' => date("Y-m-d", strtotime($data['transactiondate'])),
+					'type' => '2',
+					'description' => $data['description']
+				];
 			}
-		} else {
-			$res['message'] = '0';
-		}
+			
+			fclose($handle);
 
-		return response($res);
+			if(!empty($arr)){
+				DB::table('transaction')->insert($arr);
+				return response(['message' => '1']); // Success
+			}
+		}
+		
+		return response(['message' => '0']); // No file uploaded
 	}
 }

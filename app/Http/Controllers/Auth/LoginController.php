@@ -1,24 +1,25 @@
 <?php
 
-
 namespace App\Http\Controllers\Auth;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
-//Class needed for login and Logout logic
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Routing\Controller as BaseController;
 
 trait AuthenticatesUsers
 {
-    public function showLoginForm()
+    public function showLoginForm(): \Illuminate\View\View
     {
         return view('auth.login');
     }
 
-    public function login(Request $request)
+    public function login(Request $request): \Illuminate\Http\RedirectResponse
     {
         $this->validateLogin($request);
 
@@ -29,7 +30,7 @@ trait AuthenticatesUsers
         return $this->sendFailedLoginResponse($request);
     }
 
-    protected function validateLogin(Request $request)
+    protected function validateLogin(Request $request): void
     {
         $request->validate([
             $this->username() => 'required|string',
@@ -37,38 +38,38 @@ trait AuthenticatesUsers
         ]);
     }
 
-    protected function attemptLogin(Request $request)
+    protected function attemptLogin(Request $request): bool
     {
         return Auth::attempt(
             $this->credentials($request), $request->filled('remember')
         );
     }
 
-    protected function credentials(Request $request)
+    protected function credentials(Request $request): array
     {
         return $request->only($this->username(), 'password');
     }
 
-    protected function sendLoginResponse(Request $request)
+    protected function sendLoginResponse(Request $request): \Illuminate\Http\RedirectResponse
     {
         $request->session()->regenerate();
 
         return redirect()->intended($this->redirectPath());
     }
 
-    protected function sendFailedLoginResponse(Request $request)
+    protected function sendFailedLoginResponse(Request $request): void
     {
         throw ValidationException::withMessages([
             $this->username() => [trans('auth.failed')],
         ]);
     }
 
-    public function username()
+    public function username(): string
     {
         return 'email';
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): \Illuminate\Http\RedirectResponse
     {
         Auth::logout();
 
@@ -80,12 +81,7 @@ trait AuthenticatesUsers
     }
 }
 
-//Auth facade
-use Illuminate\Support\Facades\Auth;
-use DB;
-
-
-class LoginController  extends Controller
+class LoginController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
@@ -105,49 +101,51 @@ class LoginController  extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/duit/home';
 
     /**
      * Create a new controller instance.
-     *
-     * @return void
      */
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
     }
-	public function logout() {
-	  Auth::logout();
-	  return redirect('/login');
-	}
-	
-	 public function authenticate(Request $request)
+
+    public function logout(): \Illuminate\Http\RedirectResponse
     {
-		$email = $request->input('email');
-		$password = $request->input('password');
-		$this->validate($request,[
-				'email'=>'required',
-				'password' => 'required'
-		]);
-        if (Auth::attempt(['email' => $email, 'password' => $password, 'status' => 'Active'])) {
-            $user = DB::table('users')->where('email',$email)->get();
-			//$data = DB::table('roleaccess')->where('userid',$user[0]->userid)->get();
-			
+        Auth::logout();
+        return redirect('/login');
+    }
+	
+    public function authenticate(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string'
+        ]);
+
+        if (Auth::attempt([
+            'email' => $validated['email'], 
+            'password' => $validated['password'], 
+            'status' => 'Active'
+        ])) {
+            $user = DB::table('users')->where('email', $validated['email'])->first();
+            if ($user) {
+                return redirect()->intended($this->redirectPath());
+            }
         }
-		return redirect()->back()
+
+        return redirect()->back()
             ->withInput($request->only($this->username(), 'remember'))
             ->withErrors([
                 $this->username() => \Lang::get('auth.failed'),
             ]);
     }
-	
 
-	
-	
-	public function showLoginForm()
-   {
-       return view('auth.login');
-   }
+    public function showLoginForm(): \Illuminate\View\View
+    {
+        return view('auth.login');
+    }
    
 
 }
