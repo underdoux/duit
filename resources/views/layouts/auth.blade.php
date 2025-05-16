@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <base href="{{ url('/duit') }}">
 
     <title>Money Pro Management</title>
 
@@ -73,18 +72,15 @@
     @yield('content')
 
     <script>
-        // Add base URL to all relative URLs
+        // Set CSRF token for AJAX requests
         document.addEventListener('DOMContentLoaded', function() {
-            const base = '{{ url("/duit") }}';
-            document.querySelectorAll('a[href^="/"]').forEach(link => {
-                if (!link.getAttribute('href').startsWith(base)) {
-                    link.href = base + link.getAttribute('href');
-                }
-            });
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             document.querySelectorAll('form').forEach(form => {
-                if (form.action && !form.action.startsWith(base)) {
-                    form.action = base + form.getAttribute('action');
-                }
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = '_token';
+                input.value = token;
+                form.appendChild(input);
             });
         });
     </script>
