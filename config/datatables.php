@@ -4,12 +4,12 @@ return [
     /**
      * DataTables search options.
      */
-    'search'         => [
+    'search' => [
         /**
          * Smart search will enclose search keyword with wildcard string "%keyword%".
          * SQL: column LIKE "%keyword%"
          */
-        'smart'            => true,
+        'smart' => true,
 
         /**
          * Case insensitive will search the keyword in lower case format.
@@ -21,22 +21,22 @@ return [
          * Wild card will add "%" in between every characters of the keyword.
          * SQL: column LIKE "%k%e%y%w%o%r%d%"
          */
-        'use_wildcards'    => false,
+        'use_wildcards' => false,
     ],
 
     /**
      * DataTables internal index id response column name.
      */
-    'index_column'   => 'DT_Row_Index',
+    'index_column' => 'DT_Row_Index',
 
     /**
      * DataTables fractal configurations.
      */
-    'fractal'        => [
+    'fractal' => [
         /**
          * Request key name to parse includes on fractal.
          */
-        'includes'   => 'include',
+        'includes' => 'include',
 
         /**
          * Default fractal serializer.
@@ -48,20 +48,20 @@ return [
      * Datatables list of available engines.
      * This is where you can register your custom datatables engine.
      */
-    'engines'        => [
-        'eloquent'   => Yajra\Datatables\Engines\EloquentEngine::class,
-        'query'      => Yajra\Datatables\Engines\QueryBuilderEngine::class,
+    'engines' => [
+        'eloquent' => Yajra\Datatables\Engines\EloquentEngine::class,
+        'query' => Yajra\Datatables\Engines\QueryBuilderEngine::class,
         'collection' => Yajra\Datatables\Engines\CollectionEngine::class,
     ],
 
     /**
      * Datatables accepted builder to engine mapping.
      */
-    'builders'       => [
+    'builders' => [
         Illuminate\Database\Eloquent\Relations\Relation::class => 'eloquent',
-        Illuminate\Database\Eloquent\Builder::class            => 'eloquent',
-        Illuminate\Database\Query\Builder::class               => 'query',
-        Illuminate\Support\Collection::class                   => 'collection',
+        Illuminate\Database\Eloquent\Builder::class => 'eloquent',
+        Illuminate\Database\Query\Builder::class => 'query',
+        Illuminate\Support\Collection::class => 'collection',
     ],
 
     /**
@@ -77,6 +77,6 @@ return [
      * 'throw'          - Throws a \Yajra\Datatables\Exception. You can then use your custom error handler if needed.
      * 'custom message' - Any friendly message to be displayed to the user. You can also use translation key.
      */
-    'error'          => env('DATATABLES_ERROR', null),
+    'error' => env('DATATABLES_ERROR', null),
 
 ];

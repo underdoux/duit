@@ -13,7 +13,7 @@ class UsersTableSeeder extends Seeder
         // Create admin role
         DB::table('role')->insert([
             'roleid' => 1,
-            'name' => 'admin'
+            'name' => 'admin',
         ]);
 
         // Create admin user
@@ -24,7 +24,7 @@ class UsersTableSeeder extends Seeder
             'status' => 'active',
             'role' => 'admin',
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
     }
 }

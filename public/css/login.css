@@ -1,6 +1,118 @@
-
-.login-background{
-	background: -webkit-linear-gradient(left, #22d686, #24d3d3, #22d686, #24d3d3);
+.login-background {
+    background: -webkit-linear-gradient(left, #22d686, #24d3d3, #22d686, #24d3d3);
     background: linear-gradient(to right, #22d686, #24d3d3, #22d686, #24d3d3);
     background-size: 600% 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 40px 0;
+}
+
+.panel {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 3rem;
+    margin: 0 auto;
+    max-width: 420px;
+    width: 100%;
+}
+
+.panel .header {
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.panel .header h3 {
+    color: #1a1a1a;
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.panel .header p {
+    color: #666;
+    font-size: 15px;
+    margin: 0;
+}
+
+.form-control {
+    height: 50px;
+    border-radius: 8px;
+    border: 2px solid #eef0f3;
+    padding: 0.75rem 1rem;
+    font-size: 15px;
+    transition: all 0.2s ease;
+    margin-bottom: 0.5rem;
+    background-color: #f8f9fa;
+}
+
+.form-control:focus {
+    border-color: #22d686;
+    box-shadow: 0 0 0 3px rgba(34, 214, 134, 0.1);
+    outline: none;
+    background-color: #fff;
+}
+
+.btn-primary {
+    background-color: #22d686;
+    border: none;
+    padding: 14px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 1.5rem;
+    transition: all 0.2s ease;
+    letter-spacing: -0.2px;
+}
+
+.btn-primary:hover {
+    background-color: #1fb876;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 214, 134, 0.2);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    color: #444;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+    font-size: 14px;
+}
+
+.help-block {
+    color: #dc3545;
+    margin-top: 0.5rem;
+    font-size: 13px;
+    display: block;
+}
+
+.has-error .form-control {
+    border-color: #dc3545;
+    background-color: #fff;
+}
+
+.has-error .form-control:focus {
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+@media (max-width: 576px) {
+    .panel {
+        padding: 2rem;
+        margin: 1rem;
+    }
 }

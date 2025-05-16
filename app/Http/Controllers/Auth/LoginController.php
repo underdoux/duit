@@ -6,11 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Routing\Controller as BaseController;
 
 trait AuthenticatesUsers
 {
@@ -111,23 +107,29 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+    public function redirectPath(): string
+    {
+        return $this->redirectTo;
+    }
+
     public function logout(): \Illuminate\Http\RedirectResponse
     {
         Auth::logout();
+
         return redirect('/login');
     }
-	
+
     public function authenticate(Request $request): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
             'email' => 'required|email',
-            'password' => 'required|string'
+            'password' => 'required|string',
         ]);
 
         if (Auth::attempt([
-            'email' => $validated['email'], 
-            'password' => $validated['password'], 
-            'status' => 'Active'
+            'email' => $validated['email'],
+            'password' => $validated['password'],
+            'status' => 'Active',
         ])) {
             $user = DB::table('users')->where('email', $validated['email'])->first();
             if ($user) {
@@ -146,6 +148,4 @@ class LoginController extends Controller
     {
         return view('auth.login');
     }
-   
-
 }

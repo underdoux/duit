@@ -17,6 +17,6 @@ return [
     'reset' => 'Tu Contraseña fue reseteada con exito!',
     'sent' => 'Acabamos de enviarte un E-Mail con el reseteo de la Contraseña',
     'token' => 'El Token de Reset de Password es Invalido.',
-    'user' => "No podemos encontrar un usuario con ese E-Mail.",
+    'user' => 'No podemos encontrar un usuario con ese E-Mail.',
 
 ];

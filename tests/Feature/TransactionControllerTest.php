@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class TransactionControllerTest extends TestCase
 {
@@ -17,8 +17,8 @@ class TransactionControllerTest extends TestCase
         parent::setUp();
         // Create a user manually
         $this->user = User::first();
-        if (!$this->user) {
-            $this->user = new User();
+        if (! $this->user) {
+            $this->user = new User;
             $this->user->name = 'Test User';
             $this->user->email = 'testuser@example.com';
             $this->user->password = bcrypt('password');

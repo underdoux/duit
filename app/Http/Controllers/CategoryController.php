@@ -2,283 +2,305 @@
 
 namespace App\Http\Controllers;
 
+use App;
+use App\CategoryModel;
+use Auth;
+use DB;
 use Illuminate\Http\Request;
 use Yajra\Datatables\Datatables;
-use App\CategoryModel;
-use App\SubCategoryModel;
-use App\Http\Controllers\TraitSettings;
-use DB;
-use App;
-use Auth;
+
 class CategoryController extends Controller
 {
+    use TraitSettings;
 
-	use TraitSettings;
-	//show default data
-	public function incomeindex() {
-		if (Auth::user()->isrole('9')){
-            return view( 'category.income.index' );
-        } else{
-             return redirect('home');
+    // show default data
+    public function incomeindex()
+    {
+        if (Auth::user()->isrole('9')) {
+            return view('category.income.index');
+        } else {
+            return redirect('home');
         }
-	
-	}
 
-	public function __construct() {
-		$data = $this->getapplications();
-		$lang = $data[0]->languages;
-		App::setLocale($lang);
-		$this->middleware( 'auth' );
-	}
+    }
 
-	/**
-	 * get category from database
-	 * @return object
-	 */
-	public function incomegetdata() {
-		$incomecategory = CategoryModel::select( ['categoryid', 'name', 'description', 'color'] )->where( 'type', '1' );
+    public function __construct()
+    {
+        $data = $this->getapplications();
+        $lang = $data[0]->languages;
+        App::setLocale($lang);
+        $this->middleware('auth');
+    }
 
-		return Datatables::of( $incomecategory )
-		->addColumn( 'color', function ( $accountsingle ) {
-				return '<span class="label" style= width:70px;background:'.$accountsingle->color.'><span>';
-			} )
-		->addColumn( 'action', function ( $accountsingle ) {
-				return '<a href="#" id="btnedit" customdata='.$accountsingle->categoryid.' class="btn btn-sm btn-primary" data-toggle="modal" data-target="#edit"><i class="ti-pencil"></i> '. trans('lang.edit').'</a>
-						<a href="#" id="btndelete" customdata='.$accountsingle->categoryid.' class="btn btn-sm btn-danger" data-toggle="modal" data-target="#delete"><i class="ti-trash"></i> '. trans('lang.delete').'</a>';
-			} )
-		->rawColumns( ['color', 'action'] )->make( true );
-	}
+    /**
+     * get category from database
+     *
+     * @return object
+     */
+    public function incomegetdata()
+    {
+        $incomecategory = CategoryModel::select(['categoryid', 'name', 'description', 'color'])->where('type', '1');
 
-	/**
-	 * get subcategory from database
-	 * @return object
-	 */
-	public function incomesubgetdata() {
-		$incomesubcategory = DB::table( 'category' )
-		->join( 'subcategory', 'category.categoryid', '=', 'subcategory.categoryid' )
-		->select( 'category.name as category', 'subcategory.*' )
-		->where( 'category.type', '1' )
-		->get();
-		return Datatables::of( $incomesubcategory )
-		->addColumn( 'action', function ( $accountsingle ) {
-				return '<a href="#" id="btnedit" customdata='.$accountsingle->subcategoryid.' class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editsub"><i class="ti-pencil"></i> '. trans('lang.edit').'</a>
-						<a href="#" id="btndelete" customdata='.$accountsingle->subcategoryid.' class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deletesub"><i class="ti-trash"></i> '. trans('lang.delete').'</a>';
-			} )->make( true );
-	}
+        return Datatables::of($incomecategory)
+            ->addColumn('color', function ($accountsingle) {
+                return '<span class="label" style= width:70px;background:'.$accountsingle->color.'><span>';
+            })
+            ->addColumn('action', function ($accountsingle) {
+                return '<a href="#" id="btnedit" customdata='.$accountsingle->categoryid.' class="btn btn-sm btn-primary" data-toggle="modal" data-target="#edit"><i class="ti-pencil"></i> '.trans('lang.edit').'</a>
+						<a href="#" id="btndelete" customdata='.$accountsingle->categoryid.' class="btn btn-sm btn-danger" data-toggle="modal" data-target="#delete"><i class="ti-trash"></i> '.trans('lang.delete').'</a>';
+            })
+            ->rawColumns(['color', 'action'])->make(true);
+    }
 
+    /**
+     * get subcategory from database
+     *
+     * @return object
+     */
+    public function incomesubgetdata()
+    {
+        $incomesubcategory = DB::table('category')
+            ->join('subcategory', 'category.categoryid', '=', 'subcategory.categoryid')
+            ->select('category.name as category', 'subcategory.*')
+            ->where('category.type', '1')
+            ->get();
 
-	/**
-	 * insert data category to database
-	 *
-	 * @param string  $name
-	 * @param string  $description
-	 * @param string  $color
-	 * @return object
-	 */
-	public function incomesave( Request $request ) {
-		$name    = $request->input( 'name' );
-		$description  = $request->input( 'description' );
-		$color    = '#'.$request->input( 'color' );
+        return Datatables::of($incomesubcategory)
+            ->addColumn('action', function ($accountsingle) {
+                return '<a href="#" id="btnedit" customdata='.$accountsingle->subcategoryid.' class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editsub"><i class="ti-pencil"></i> '.trans('lang.edit').'</a>
+						<a href="#" id="btndelete" customdata='.$accountsingle->subcategoryid.' class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deletesub"><i class="ti-trash"></i> '.trans('lang.delete').'</a>';
+            })->make(true);
+    }
 
-		$data = array( 'color'=>$color, 'name'=>$name, 'description'=>$description, 'type'=>'1' );
-		$insert = DB::table( 'category' )->insert( $data );
+    /**
+     * insert data category to database
+     *
+     * @param  string  $name
+     * @param  string  $description
+     * @param  string  $color
+     * @return object
+     */
+    public function incomesave(Request $request)
+    {
+        $name = $request->input('name');
+        $description = $request->input('description');
+        $color = '#'.$request->input('color');
 
-		if ( $insert ) {
-			$res['success'] = true;
-			$res['message']= 'Category has been added';
-			return response( $res );
-		}
-	}
+        $data = ['color' => $color, 'name' => $name, 'description' => $description, 'type' => '1'];
+        $insert = DB::table('category')->insert($data);
 
-	/**
-	 * insert data sub category to database
-	 *
-	 * @param string  $name
-	 * @param string  $category
-	 * @param string  $description
-	 * @return object
-	 */
-	public function incomesubsave( Request $request ) {
-		$category   = $request->input( 'category' );
-		$name    = $request->input( 'name' );
-		$description  = $request->input( 'description' );
+        if ($insert) {
+            $res['success'] = true;
+            $res['message'] = 'Category has been added';
 
-		$data = array( 'name'=>$name, 'categoryid'=>$category, 'description'=>$description, 'type'=>'1' );
-		$insert = DB::table( 'subcategory' )->insert( $data );
+            return response($res);
+        }
+    }
 
-		if ( $insert ) {
-			$res['success'] = true;
-			$res['message']= 'Sub Category has been added';
-			return response( $res );
-		}
-	}
+    /**
+     * insert data sub category to database
+     *
+     * @param  string  $name
+     * @param  string  $category
+     * @param  string  $description
+     * @return object
+     */
+    public function incomesubsave(Request $request)
+    {
+        $category = $request->input('category');
+        $name = $request->input('name');
+        $description = $request->input('description');
 
-	/**
-	 * save edit category to database
-	 *
-	 * @param unknown
-	 * @param string  $name
-	 * @param integer $id
-	 * @param string  $description
-	 * @param color   $color
-	 * @return object
-	 */
-	public function incomesaveedit( Request $request ) {
-		$id    = $request->input( 'id' );
-		$name    = $request->input( 'name' );
-		$description  = $request->input( 'description' );
-		$color    = '#'.$request->input( 'color' );
+        $data = ['name' => $name, 'categoryid' => $category, 'description' => $description, 'type' => '1'];
+        $insert = DB::table('subcategory')->insert($data);
 
-		$update = DB::table( 'category' )->where( 'categoryid', $id )
-		->update(
-			[
-			'name'   =>$name,
-			'description' =>$description,
-			'color'   =>$color
-			]
-		);
+        if ($insert) {
+            $res['success'] = true;
+            $res['message'] = 'Sub Category has been added';
 
-		if ( $update ) {
-			$res['success'] = true;
-			$res['message']= 'Category has been updated';
-			return response( $res );
-		}
+            return response($res);
+        }
+    }
 
-	}
+    /**
+     * save edit category to database
+     *
+     * @param unknown
+     * @param  string  $name
+     * @param  int  $id
+     * @param  string  $description
+     * @param  color  $color
+     * @return object
+     */
+    public function incomesaveedit(Request $request)
+    {
+        $id = $request->input('id');
+        $name = $request->input('name');
+        $description = $request->input('description');
+        $color = '#'.$request->input('color');
 
-	/**
-	 * save edit sub category to database
-	 *
-	 * @param unknown
-	 * @param string  $name
-	 * @param integer $id
-	 * @param string  $description
-	 * @return object
-	 */
-	public function incomesubsaveedit( Request $request ) {
-		$id    = $request->input( 'id' );
-		$name    = $request->input( 'name' );
-		$description  = $request->input( 'description' );
-		$category   = $request->input( 'category' );
+        $update = DB::table('category')->where('categoryid', $id)
+            ->update(
+                [
+                    'name' => $name,
+                    'description' => $description,
+                    'color' => $color,
+                ]
+            );
 
-		$update = DB::table( 'subcategory' )->where( 'subcategoryid', $id )
-		->update(
-			[
-			'name'   =>$name,
-			'categoryid' =>$category,
-			'description' =>$description
-			]
-		);
+        if ($update) {
+            $res['success'] = true;
+            $res['message'] = 'Category has been updated';
 
-		if ( $update ) {
-			$res['success'] = true;
-			$res['message']= 'SubCategory has been updated';
-			return response( $res );
-		}
+            return response($res);
+        }
 
-	}
+    }
 
-	/**
-	 * delete category to database
-	 *
-	 * @param integer $id
-	 * @return object
-	 */
+    /**
+     * save edit sub category to database
+     *
+     * @param unknown
+     * @param  string  $name
+     * @param  int  $id
+     * @param  string  $description
+     * @return object
+     */
+    public function incomesubsaveedit(Request $request)
+    {
+        $id = $request->input('id');
+        $name = $request->input('name');
+        $description = $request->input('description');
+        $category = $request->input('category');
 
-	public function incomedelete( Request $request ) {
-		$id = $request->input( 'iddelete' );
+        $update = DB::table('subcategory')->where('subcategoryid', $id)
+            ->update(
+                [
+                    'name' => $name,
+                    'categoryid' => $category,
+                    'description' => $description,
+                ]
+            );
 
-		$cektransaction = DB::select("SELECT * from transaction where categoryid in (select subcategoryid from subcategory join category on category.categoryid = subcategory.categoryid where subcategory.categoryid = '$id') and type = 1");
-		
-		if(count($cektransaction) > 0){
-				$res['success'] = 'false';
-		}else{
-			$delete = DB::table( 'category' )->where( 'categoryid', $id )->delete();
-			if ( $delete ) {
-				$res['success'] = 'true';
-				$res['message']= 'income Category has been deleted';
-				
-			}	
-		}	
-		return response( $res );
-	}
+        if ($update) {
+            $res['success'] = true;
+            $res['message'] = 'SubCategory has been updated';
 
-	/**
-	 * delete sub category to database
-	 *
-	 * @param integer $id
-	 * @return object
-	 */
-	public function incomesubdelete( Request $request ) {
-		$id = $request->input( 'iddelete' );
+            return response($res);
+        }
 
-		$cektransaction = DB::table( 'transaction' )->where( 'categoryid', $id )->first();
-		if(!$cektransaction){
-			$delete = DB::table( 'subcategory' )->where( 'subcategoryid', $id )->delete();
-			if ( $delete ) {
-				$res['success'] = 'true';
-				$res['message']= 'income Sub Category has been deleted';
-				
-			} 
-		}else{
+    }
 
-				$res['success'] = 'false';
-		}
-		return response( $res );
-	}
+    /**
+     * delete category to database
+     *
+     * @param  int  $id
+     * @return object
+     */
+    public function incomedelete(Request $request)
+    {
+        $id = $request->input('iddelete');
 
-	/**
-	 * get single data category
-	 *
-	 * @param integer $id
-	 * @return object
-	 */
-	public function incomegetedit( Request $request ) {
-		$id    = $request->input( 'id' );
+        $cektransaction = DB::select("SELECT * from transaction where categoryid in (select subcategoryid from subcategory join category on category.categoryid = subcategory.categoryid where subcategory.categoryid = '$id') and type = 1");
 
-		$data = DB::table( 'category' )->where( 'categoryid', $id )->get();
+        if (count($cektransaction) > 0) {
+            $res['success'] = 'false';
+        } else {
+            $delete = DB::table('category')->where('categoryid', $id)->delete();
+            if ($delete) {
+                $res['success'] = 'true';
+                $res['message'] = 'income Category has been deleted';
 
-		if ( $data ) {
-			$res['success'] = true;
-			$res['color'] = str_replace( "#", "", $data[0]->color );
-			$res['message']= $data;
-			return response( $res );
-		}
-	}
+            }
+        }
 
-	/**
-	 * get single data sub category
-	 *
-	 * @param integer $id
-	 * @return object
-	 */
-	public function incomesubgetedit( Request $request ) {
-		$id    = $request->input( 'id' );
+        return response($res);
+    }
 
-		$data = DB::table( 'subcategory' )->where( 'subcategoryid', $id )->get();
+    /**
+     * delete sub category to database
+     *
+     * @param  int  $id
+     * @return object
+     */
+    public function incomesubdelete(Request $request)
+    {
+        $id = $request->input('iddelete');
 
-		if ( $data ) {
-			$res['success'] = true;
-			$res['message']= $data;
-			return response( $res );
-		}
-	}
+        $cektransaction = DB::table('transaction')->where('categoryid', $id)->first();
+        if (! $cektransaction) {
+            $delete = DB::table('subcategory')->where('subcategoryid', $id)->delete();
+            if ($delete) {
+                $res['success'] = 'true';
+                $res['message'] = 'income Sub Category has been deleted';
 
-	/**
-	 * get single data subcategory by category
-	 *
-	 * @param integer $id
-	 * @return object
-	 */
-	public function incomesubcategorybycat( Request $request ) {
-		$id    = $request->input( 'id' );
+            }
+        } else {
 
-		$data = DB::table( 'subcategory' )->where( 'categoryid', $id )->get();
+            $res['success'] = 'false';
+        }
 
-		if ( $data ) {
-			$res['success'] = true;
-			$res['message']= $data;
-			return response( $res );
-		}
-	}
+        return response($res);
+    }
+
+    /**
+     * get single data category
+     *
+     * @param  int  $id
+     * @return object
+     */
+    public function incomegetedit(Request $request)
+    {
+        $id = $request->input('id');
+
+        $data = DB::table('category')->where('categoryid', $id)->get();
+
+        if ($data) {
+            $res['success'] = true;
+            $res['color'] = str_replace('#', '', $data[0]->color);
+            $res['message'] = $data;
+
+            return response($res);
+        }
+    }
+
+    /**
+     * get single data sub category
+     *
+     * @param  int  $id
+     * @return object
+     */
+    public function incomesubgetedit(Request $request)
+    {
+        $id = $request->input('id');
+
+        $data = DB::table('subcategory')->where('subcategoryid', $id)->get();
+
+        if ($data) {
+            $res['success'] = true;
+            $res['message'] = $data;
+
+            return response($res);
+        }
+    }
+
+    /**
+     * get single data subcategory by category
+     *
+     * @param  int  $id
+     * @return object
+     */
+    public function incomesubcategorybycat(Request $request)
+    {
+        $id = $request->input('id');
+
+        $data = DB::table('subcategory')->where('categoryid', $id)->get();
+
+        if ($data) {
+            $res['success'] = true;
+            $res['message'] = $data;
+
+            return response($res);
+        }
+    }
 }

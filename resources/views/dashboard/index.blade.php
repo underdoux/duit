@@ -1,6 +1,15 @@
 @extends('layouts.app')
+
 @section('content')
-<div class="content">
+<div id="app">
+    <dashboard></dashboard>
+</div>
+
+@push('scripts')
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="{{ mix('js/app.js') }}" defer></script>
+@endpush
 		<div class="row">
 			
 			<div class="col-lg-3 col-sm-6">
