@@ -1,4 +1,8 @@
 <IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
     RewriteEngine On
     RewriteBase /duit/
 
@@ -11,20 +15,20 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Handle Front Controller...
+    # Handle Assets
+    RewriteCond %{REQUEST_URI} ^/duit/(.+)\.(css|js|jpg|jpeg|png|gif|ico|woff|woff2|ttf|svg|eot)$
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.+)$ public/$1 [L]
+
+    # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 
-    # Handle Assets
-    RewriteCond %{REQUEST_FILENAME} -f
-    RewriteCond %{REQUEST_URI} ^/duit/(.+)$
-    RewriteRule ^(.*)$ $1 [L]
-</IfModule>
-
-# Handle Authorization Headers
-<IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-    Header set Access-Control-Allow-Headers "X-Requested-With, Content-Type, X-Token-Auth, Authorization"
+    # Set Base URL for assets
+    <IfModule mod_headers.c>
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Header set Access-Control-Allow-Headers "X-Requested-With, Content-Type, X-Token-Auth, Authorization"
+    </IfModule>
 </IfModule>

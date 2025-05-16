@@ -4,13 +4,12 @@ namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 
 class RouteServiceProvider extends ServiceProvider
 {
     /**
      * This namespace is applied to your controller routes.
-     *
-     * In addition, it is set as the URL generator's root namespace.
      *
      * @var string
      */
@@ -29,6 +28,13 @@ class RouteServiceProvider extends ServiceProvider
     public function boot(): void
     {
         parent::boot();
+
+        // Force all URLs to use the base path
+        URL::forceRootUrl(config('app.url'));
+
+        if (str_contains(config('app.url'), '/duit')) {
+            URL::forceScheme('http');
+        }
     }
 
     /**

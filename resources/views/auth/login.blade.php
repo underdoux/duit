@@ -1,88 +1,49 @@
 @extends('layouts.auth')
 
 @section('content')
-<div class="login-container">
-    <div class="login-box">
-        <div class="login-header">
-            <div class="logo-container">
-                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            <h1>Money Pro Management</h1>
-            <p>Welcome back! Please sign in to continue.</p>
+<div class="login-container" style="max-width: 400px; margin: 0 auto; padding: 2rem;">
+    <div class="login-box" style="background: #fff; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <div class="login-header" style="text-align: center; margin-bottom: 2rem;">
+            <img src="{{ asset('artifacts/company_logo_blue_square.jpeg') }}" alt="Company Logo" style="width: 48px; height: 48px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+            <span style="font-weight: 700; font-size: 1.5rem; vertical-align: middle;">Company</span>
         </div>
 
-        <form class="login-form" method="POST" action="{{ url('/duit/authenticate') }}">
-            {{ csrf_field() }}
+        <form method="POST" action="{{ url('/duit/login') }}">
+            @csrf
+            <h2 style="text-align: center; margin-bottom: 1.5rem;">Welcome</h2>
 
-            <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                <label for="email">Email Address</label>
-                <div class="input-wrapper">
-                    <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-                    </svg>
-                    <input 
-                        id="email" 
-                        type="email" 
-                        name="email" 
-                        value="{{ old('email') }}" 
-                        placeholder="name@company.com"
-                        required 
-                        autocomplete="email"
-                        autofocus
-                    >
-                    @if ($errors->has('email'))
-                        <div class="error-message">
-                            <svg class="error-icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                            {{ $errors->first('email') }}
-                        </div>
-                    @endif
-                </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label for="email" style="display: block; margin-bottom: 0.5rem;">Email</label>
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
+                    style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; @error('email') border-color: #e53e3e; @enderror">
+                @error('email')
+                    <p style="color: #e53e3e; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
+                @enderror
             </div>
 
-            <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                <label for="password">Password</label>
-                <div class="input-wrapper">
-                    <svg class="input-icon" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
-                    </svg>
-                    <input 
-                        id="password" 
-                        type="password" 
-                        name="password" 
-                        placeholder="••••••••"
-                        required
-                        autocomplete="current-password"
-                    >
-                    @if ($errors->has('password'))
-                        <div class="error-message">
-                            <svg class="error-icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                            {{ $errors->first('password') }}
-                        </div>
-                    @endif
-                </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="password" style="display: block; margin-bottom: 0.5rem;">Password</label>
+                <input id="password" type="password" name="password" required
+                    style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem;">
+                @error('password')
+                    <p style="color: #e53e3e; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
+                @enderror
             </div>
 
-            <div class="form-actions">
-                <label class="checkbox-container">
-                    <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
-                    <span class="checkmark"></span>
-                    Remember me
-                </label>
-            </div>
-
-            <button type="submit" class="login-button">
-                Sign In
+            <button type="submit" style="width: 100%; background-color: #2563EB; color: white; padding: 0.75rem; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                Sign in
             </button>
+
+            <div style="text-align: center; margin-top: 1rem;">
+                <a href="#" style="color: #2563EB; font-size: 0.875rem; text-decoration: none;">Forgot password?</a>
+            </div>
         </form>
     </div>
+
+    <footer style="text-align: center; margin-top: 2rem; font-size: 0.875rem; color: #6B7280;">
+        <a href="#" style="margin: 0 1rem; color: #6B7280; text-decoration: none;">Terms</a>
+        <a href="#" style="margin: 0 1rem; color: #6B7280; text-decoration: none;">Privacy</a>
+        <a href="#" style="margin: 0 1rem; color: #6B7280; text-decoration: none;">Support</a>
+    </footer>
 </div>
 @endsection

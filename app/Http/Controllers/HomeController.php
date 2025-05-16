@@ -2,401 +2,176 @@
 
 namespace App\Http\Controllers;
 
-use App;
-use DB;
-use Yajra\Datatables\Datatables;
+use Illuminate\Http\Request;
+use App\Models\Account;
+use App\Models\IncomeTransaction;
+use App\Models\ExpenseTransaction;
+use App\Models\Budget;
+use App\Models\FinancialGoal;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
-    use TraitSettings;
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
-        $data = $this->getapplications();
-        if (isset($data[0])) {
-            $lang = $data[0]->languages;
-        } else {
-            $lang = 'en'; // default language fallback
-        }
-        App::setLocale($lang);
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        return view('dashboard.index');
+        $user = auth()->user();
+
+        $data = [
+            'totalBalance' => $user->getTotalBalance(),
+            'monthlyIncome' => $user->getMonthlyIncome(),
+            'monthlyExpense' => $user->getMonthlyExpense(),
+            'incomeVsExpense' => $this->getIncomeVsExpenseData(),
+            'expensesByCategory' => $this->getExpensesByCategoryData(),
+            'recentTransactions' => $this->getRecentTransactions(),
+            'activeBudgets' => $this->getActiveBudgets(),
+            'activeGoals' => $this->getActiveGoals(),
+            'accountBalances' => $this->getAccountBalances(),
+        ];
+
+        return view('home', $data);
     }
 
-    /**
-     * Show income vs expense by month.
-     *
-     * @return object
-     */
-    public function incomevsexpense()
+    private function getIncomeVsExpenseData()
     {
-        $thisyear = date('Y');
+        $user = auth()->user();
+        $data = collect();
 
-        // Query income, upcoming income, expense, upcoming expense grouped by month
-        $transactions = DB::table('transaction')
-            ->select(DB::raw('type, MONTH(transactiondate) as month, SUM(amount) as amount'))
-            ->whereIn('type', [1, 2, 3, 4])
-            ->whereYear('transactiondate', $thisyear)
-            ->groupBy('type', 'month')
-            ->get()
-            ->groupBy('type');
-
-        // Initialize result array with zeros for each month and type
-        $res = [];
-        for ($m = 1; $m <= 12; $m++) {
-            $res['ijan'] = $transactions[1][$m - 1]->amount ?? 0;
-            $res['ifeb'] = $transactions[1][$m - 1]->amount ?? 0;
-            $res['imar'] = $transactions[1][$m - 1]->amount ?? 0;
-            $res['iapr'] = $transactions[1][$m - 1]->amount ?? 0;
-            $res['imay'] = $transactions[1][$m - 1]->amount ?? 0;
-            $res['ijun'] = $transactions[1][$m - 1]->amount ?? 0;
-            $res['ijul'] = $transactions[1][$m - 1]->amount ?? 0;
-            $res['iags'] = $transactions[1][$m - 1]->amount ?? 0;
-            $res['isep'] = $transactions[1][$m - 1]->amount ?? 0;
-            $res['iokt'] = $transactions[1][$m - 1]->amount ?? 0;
-            $res['inov'] = $transactions[1][$m - 1]->amount ?? 0;
-            $res['ides'] = $transactions[1][$m - 1]->amount ?? 0;
-
-            $res['uijan'] = $transactions[3][$m - 1]->amount ?? 0;
-            $res['uifeb'] = $transactions[3][$m - 1]->amount ?? 0;
-            $res['uimar'] = $transactions[3][$m - 1]->amount ?? 0;
-            $res['uiapr'] = $transactions[3][$m - 1]->amount ?? 0;
-            $res['uimay'] = $transactions[3][$m - 1]->amount ?? 0;
-            $res['uijun'] = $transactions[3][$m - 1]->amount ?? 0;
-            $res['uijul'] = $transactions[3][$m - 1]->amount ?? 0;
-            $res['uiags'] = $transactions[3][$m - 1]->amount ?? 0;
-            $res['uisep'] = $transactions[3][$m - 1]->amount ?? 0;
-            $res['uiokt'] = $transactions[3][$m - 1]->amount ?? 0;
-            $res['uinov'] = $transactions[3][$m - 1]->amount ?? 0;
-            $res['uides'] = $transactions[3][$m - 1]->amount ?? 0;
-
-            $res['ejan'] = $transactions[2][$m - 1]->amount ?? 0;
-            $res['efeb'] = $transactions[2][$m - 1]->amount ?? 0;
-            $res['emar'] = $transactions[2][$m - 1]->amount ?? 0;
-            $res['eapr'] = $transactions[2][$m - 1]->amount ?? 0;
-            $res['emay'] = $transactions[2][$m - 1]->amount ?? 0;
-            $res['ejun'] = $transactions[2][$m - 1]->amount ?? 0;
-            $res['ejul'] = $transactions[2][$m - 1]->amount ?? 0;
-            $res['eags'] = $transactions[2][$m - 1]->amount ?? 0;
-            $res['esep'] = $transactions[2][$m - 1]->amount ?? 0;
-            $res['eokt'] = $transactions[2][$m - 1]->amount ?? 0;
-            $res['enov'] = $transactions[2][$m - 1]->amount ?? 0;
-            $res['edes'] = $transactions[2][$m - 1]->amount ?? 0;
-
-            $res['iejan'] = $transactions[4][$m - 1]->amount ?? 0;
-            $res['iefeb'] = $transactions[4][$m - 1]->amount ?? 0;
-            $res['iemar'] = $transactions[4][$m - 1]->amount ?? 0;
-            $res['ieapr'] = $transactions[4][$m - 1]->amount ?? 0;
-            $res['iemay'] = $transactions[4][$m - 1]->amount ?? 0;
-            $res['iejun'] = $transactions[4][$m - 1]->amount ?? 0;
-            $res['iejul'] = $transactions[4][$m - 1]->amount ?? 0;
-            $res['ieags'] = $transactions[4][$m - 1]->amount ?? 0;
-            $res['iesep'] = $transactions[4][$m - 1]->amount ?? 0;
-            $res['ieokt'] = $transactions[4][$m - 1]->amount ?? 0;
-            $res['ienov'] = $transactions[4][$m - 1]->amount ?? 0;
-            $res['iedes'] = $transactions[4][$m - 1]->amount ?? 0;
+        for ($i = 5; $i >= 0; $i--) {
+            $date = Carbon::now()->subMonths($i);
+            $data->push([
+                'month' => $date->format('M'),
+                'income' => $user->incomeTransactions()
+                    ->whereYear('date', $date->year)
+                    ->whereMonth('date', $date->month)
+                    ->sum('amount'),
+                'expense' => $user->expenseTransactions()
+                    ->whereYear('date', $date->year)
+                    ->whereMonth('date', $date->month)
+                    ->sum('amount')
+            ]);
         }
 
-        return response($res);
+        return $data;
     }
 
-    /**
-     * Show expense by category monthly.
-     *
-     * @return object
-     */
-    public function expensebycategory()
+    private function getExpensesByCategoryData()
     {
+        $user = auth()->user();
+        $startOfMonth = Carbon::now()->startOfMonth();
 
-        $data = DB::table('transaction')
-            ->join('subcategory', 'subcategory.subcategoryid', '=', 'transaction.categoryid')
-            ->join('category', 'category.categoryid', '=', 'subcategory.categoryid')
-            ->join('users', 'users.userid', '=', 'transaction.userid')
-            ->select(DB::raw('sum(amount) as amount, category.name as category, category.color as color'))
-            ->where('category.type', '2')
-            ->where('transaction.type', '2')
-            ->whereMonth('transactiondate', '=', date('m'))
-            ->groupBy('category.categoryid')
-            ->groupBy('category.name')
-            ->groupBy('category.color')
-            ->get();
-
-        return response($data);
+        return $user->expenseCategories()
+            ->withSum(['transactions' => function ($query) use ($startOfMonth) {
+                $query->where('date', '>=', $startOfMonth);
+            }], 'amount')
+            ->orderByDesc('transactions_sum_amount')
+            ->get()
+            ->map(function ($category) {
+                return [
+                    'name' => $category->name,
+                    'amount' => $category->transactions_sum_amount ?? 0,
+                    'color' => $category->color
+                ];
+            });
     }
 
-    /**
-     * Show upcoming expense by category monthly.
-     *
-     * @return object
-     */
-    public function upcomingexpensebycategory()
+    private function getRecentTransactions()
     {
+        $user = auth()->user();
+        
+        $income = $user->incomeTransactions()
+            ->with(['category', 'account'])
+            ->latest('date')
+            ->limit(5)
+            ->get()
+            ->map(function ($transaction) {
+                return [
+                    'id' => $transaction->id,
+                    'date' => $transaction->formatted_date,
+                    'description' => $transaction->description,
+                    'category' => $transaction->category->name,
+                    'amount' => '+' . $transaction->formatted_amount,
+                    'type' => 'income',
+                    'account' => $transaction->account->name
+                ];
+            });
 
-        $data = DB::table('transaction')
-            ->join('subcategory', 'subcategory.subcategoryid', '=', 'transaction.categoryid')
-            ->join('category', 'category.categoryid', '=', 'subcategory.categoryid')
-            ->join('users', 'users.userid', '=', 'transaction.userid')
-            ->select(DB::raw('sum(amount) as amount, category.name as category, category.color as color'))
-            ->where('category.type', '2')
-            ->where('transaction.type', '4')
-            ->whereMonth('transactiondate', '=', date('m'))
-            ->groupBy('category.categoryid')
-            ->groupBy('category.name')
-            ->groupBy('category.color')
-            ->get();
+        $expenses = $user->expenseTransactions()
+            ->with(['category', 'account'])
+            ->latest('date')
+            ->limit(5)
+            ->get()
+            ->map(function ($transaction) {
+                return [
+                    'id' => $transaction->id,
+                    'date' => $transaction->formatted_date,
+                    'description' => $transaction->description,
+                    'category' => $transaction->category->name,
+                    'amount' => '-' . $transaction->formatted_amount,
+                    'type' => 'expense',
+                    'account' => $transaction->account->name
+                ];
+            });
 
-        return response($data);
+        return $income->concat($expenses)
+            ->sortByDesc('date')
+            ->take(5)
+            ->values();
     }
 
-    /**
-     * Show expense by category yearly.
-     *
-     * @return object
-     */
-    public function expensebycategoryyearly()
+    private function getActiveBudgets()
     {
-
-        $data = DB::table('transaction')
-            ->join('subcategory', 'subcategory.subcategoryid', '=', 'transaction.categoryid')
-            ->join('category', 'category.categoryid', '=', 'subcategory.categoryid')
-            ->join('users', 'users.userid', '=', 'transaction.userid')
-            ->select(DB::raw('sum(amount) as amount, category.name as category, category.color as color'))
-            ->where('category.type', '2')
-            ->where('transaction.type', '2')
-            ->whereYear('transactiondate', '=', date('Y'))
-            ->groupBy('category.categoryid')
-            ->groupBy('category.name')
-            ->groupBy('category.color')
-            ->get();
-
-        return response($data);
+        return auth()->user()->getActiveBudgets()
+            ->map(function ($budget) {
+                $progress = $budget->getProgress();
+                return [
+                    'id' => $budget->id,
+                    'name' => $budget->name,
+                    'amount' => $budget->amount,
+                    'spent' => $progress['spent'],
+                    'remaining' => $progress['remaining'],
+                    'percentage' => $progress['percentage'],
+                    'status' => $progress['status']
+                ];
+            });
     }
 
-    /**
-     * Show expense by category yearly.
-     *
-     * @return object
-     */
-    public function upcomingexpensebycategoryyearly()
+    private function getActiveGoals()
     {
-
-        $data = DB::table('transaction')
-            ->join('subcategory', 'subcategory.subcategoryid', '=', 'transaction.categoryid')
-            ->join('category', 'category.categoryid', '=', 'subcategory.categoryid')
-            ->join('users', 'users.userid', '=', 'transaction.userid')
-            ->select(DB::raw('sum(amount) as amount, category.name as category, category.color as color'))
-            ->where('category.type', '2')
-            ->where('transaction.type', '4')
-            ->whereYear('transactiondate', '=', date('Y'))
-            ->groupBy('category.categoryid')
-            ->groupBy('category.name')
-            ->groupBy('category.color')
-            ->get();
-
-        return response($data);
+        return auth()->user()->getActiveGoals()
+            ->map(function ($goal) {
+                $progress = $goal->getProgress();
+                return [
+                    'id' => $goal->id,
+                    'name' => $goal->name,
+                    'target_amount' => $goal->target_amount,
+                    'current_amount' => $goal->current_amount,
+                    'remaining' => $progress['remaining'],
+                    'percentage' => $progress['percentage'],
+                    'status' => $progress['status'],
+                    'target_date' => $goal->target_date ? $goal->target_date->format('M d, Y') : null,
+                    'remaining_days' => $goal->remaining_days,
+                    'required_daily_amount' => $goal->required_daily_amount
+                ];
+            });
     }
 
-    /**
-     * Show income by category monthly.
-     *
-     * @return object
-     */
-    public function incomebycategory()
+    private function getAccountBalances()
     {
-
-        $data = DB::table('transaction')
-            ->join('subcategory', 'subcategory.subcategoryid', '=', 'transaction.categoryid')
-            ->join('category', 'category.categoryid', '=', 'subcategory.categoryid')
-            ->join('users', 'users.userid', '=', 'transaction.userid')
-            ->select(DB::raw('sum(amount) as amount, category.name as category, category.color as color'))
-            ->where('category.type', '1')
-            ->where('transaction.type', '1')
-            ->whereMonth('transactiondate', '=', date('m'))
-            ->groupBy('category.categoryid')
-            ->groupBy('category.name')
-            ->groupBy('category.color')
-            ->get();
-
-        return response($data);
-    }
-
-    /**
-     * Show income by category yearly.
-     *
-     * @return object
-     */
-    public function incomebycategoryyearly()
-    {
-
-        $data = DB::table('transaction')
-            ->join('subcategory', 'subcategory.subcategoryid', '=', 'transaction.categoryid')
-            ->join('category', 'category.categoryid', '=', 'subcategory.categoryid')
-            ->join('users', 'users.userid', '=', 'transaction.userid')
-            ->select(DB::raw('sum(amount) as amount, category.name as category, category.color as color'))
-            ->where('category.type', '1')
-            ->where('transaction.type', '1')
-            ->whereYear('transactiondate', '=', date('Y'))
-            ->groupBy('category.categoryid')
-            ->groupBy('category.name')
-            ->groupBy('category.color')
-            ->get();
-
-        return response($data);
-    }
-
-    /**
-     * Show upcoming income by category yearly.
-     *
-     * @return object
-     */
-    public function upcomingincomebycategoryyearly()
-    {
-
-        $data = DB::table('transaction')
-            ->join('subcategory', 'subcategory.subcategoryid', '=', 'transaction.categoryid')
-            ->join('category', 'category.categoryid', '=', 'subcategory.categoryid')
-            ->join('users', 'users.userid', '=', 'transaction.userid')
-            ->select(DB::raw('sum(amount) as amount, category.name as category, category.color as color'))
-            ->where('category.type', '1')
-            ->where('transaction.type', '3')
-            ->whereYear('transactiondate', '=', date('Y'))
-            ->groupBy('category.categoryid')
-            ->groupBy('category.name')
-            ->groupBy('category.color')
-            ->get();
-
-        return response($data);
-    }
-
-    /**
-     * Show total balance.
-     *
-     * @return object
-     */
-    public function totalbalance()
-    {
-        $data = DB::table('transaction')
-            ->join('subcategory', 'subcategory.subcategoryid', '=', 'transaction.categoryid')
-            ->join('category', 'category.categoryid', '=', 'subcategory.categoryid')
-            ->join('users', 'users.userid', '=', 'transaction.userid')
-            ->select(DB::raw('sum(amount) as amount, category.name as category, category.color as color'))
-            ->where('category.type', '2')
-            ->whereMonth('transactiondate', '=', date('m'))
-            ->groupBy('transaction.categoryid')
-            ->groupBy('category.name')
-            ->groupBy('category.color')
-            ->get();
-
-        return response($data);
-    }
-
-    /**
-     * Show account balance.
-     *
-     * @return object
-     */
-    public function accountbalance()
-    {
-
-        $data = DB::select('SELECT p.name,COALESCE(a.amount,0) as income,COALESCE(b.amount,0) as expense, COALESCE(p.balance+(COALESCE(a.amount,0)-COALESCE(b.amount,0)),0) as balance from account as p left join (select accountid,sum(amount) as amount from transaction where type=1 and year(transactiondate)='.date('Y').' group by accountid) as a on a.accountid = p.accountid left join (select accountid,sum(amount) as amount from transaction where type=2 and year(transactiondate)='.date('Y').' group by accountid) as b on b.accountid = p.accountid group by p.accountid');
-
-        return response($data);
-    }
-
-    /**
-     * Show budget list.
-     *
-     * @return object
-     */
-    public function budgetlist()
-    {
-        $data = DB::table('budget')
-            ->join('subcategory', 'subcategory.subcategoryid', '=', 'budget.categoryid')
-            ->join('category', 'subcategory.categoryid', '=', 'category.categoryid')
-            ->whereMonth('budget.fromdate', '=', date('m'))
-            ->groupBy('budget.categoryid')
-            ->get();
-
-        return response($data);
-    }
-
-    /**
-     * Show latest 10 income from database
-     *
-     * @return object
-     */
-    public function latestincome()
-    {
-        $data = DB::table('transaction')
-            ->join('subcategory', 'subcategory.subcategoryid', '=', 'transaction.categoryid')
-            ->join('category', 'category.categoryid', '=', 'subcategory.categoryid')
-            ->join('users', 'users.userid', '=', 'transaction.userid')
-            ->join('account', 'account.accountid', '=', 'transaction.accountid')
-            ->select('category.name as category', 'subcategory.name as subcategory', 'transaction.*', 'users.name as user', 'account.name as account')
-            ->where('transaction.type', '1')
-            ->offset(0)->limit(10)
-            ->orderBy('transactiondate', 'desc')
-            ->get();
-
-        return Datatables::of($data)
-            ->addColumn('amount', function ($single) {
-                $setting = DB::table('settings')->where('settingsid', '1')->get();
-
-                return $setting[0]->currency.number_format($single->amount, 2);
-            })
-            ->addColumn('transactiondate', function ($single) {
-                $setting = DB::table('settings')->where('settingsid', '1')->get();
-
-                return date($setting[0]->dateformat, strtotime($single->transactiondate));
-            })
-            ->make(true);
-
-    }
-
-    /**
-     * Show latest 10 expense from database
-     *
-     * @return object
-     */
-    public function latestexpense()
-    {
-        $data = DB::table('transaction')
-            ->join('subcategory', 'subcategory.subcategoryid', '=', 'transaction.categoryid')
-            ->join('category', 'category.categoryid', '=', 'subcategory.categoryid')
-            ->join('users', 'users.userid', '=', 'transaction.userid')
-            ->join('account', 'account.accountid', '=', 'transaction.accountid')
-            ->select('category.name as category', 'subcategory.name as subcategory', 'transaction.*', 'users.name as user', 'account.name as account')
-            ->where('transaction.type', '2')
-            ->offset(0)->limit(10)
-            ->orderBy('transactiondate', 'desc')
-            ->get();
-
-        return Datatables::of($data)
-            ->addColumn('amount', function ($single) {
-                $setting = DB::table('settings')->where('settingsid', '1')->get();
-
-                return $setting[0]->currency.number_format($single->amount, 2);
-            })
-            ->addColumn('transactiondate', function ($single) {
-                $setting = DB::table('settings')->where('settingsid', '1')->get();
-
-                return date($setting[0]->dateformat, strtotime($single->transactiondate));
-            })
-            ->make(true);
-
+        return auth()->user()->accounts()
+            ->get()
+            ->map(function ($account) {
+                return [
+                    'id' => $account->id,
+                    'name' => $account->name,
+                    'balance' => $account->balance,
+                    'type' => $account->type,
+                    'currency' => $account->currency
+                ];
+            });
     }
 }
