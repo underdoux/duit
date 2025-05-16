@@ -73,38 +73,19 @@ trait AuthenticatesUsers
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/duit/login');
     }
 }
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
-
     use AuthenticatesUsers;
 
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
     protected $redirectTo = '/duit/home';
 
-    /**
-     * Create a new controller instance.
-     */
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+        $this->middleware('guest')->except(['logout', 'authenticate']);
     }
 
     public function redirectPath(): string
@@ -115,8 +96,7 @@ class LoginController extends Controller
     public function logout(): \Illuminate\Http\RedirectResponse
     {
         Auth::logout();
-
-        return redirect('/login');
+        return redirect('/duit/login');
     }
 
     public function authenticate(Request $request): \Illuminate\Http\RedirectResponse
@@ -130,22 +110,23 @@ class LoginController extends Controller
             'email' => $validated['email'],
             'password' => $validated['password'],
             'status' => 'Active',
-        ])) {
-            $user = DB::table('users')->where('email', $validated['email'])->first();
-            if ($user) {
-                return redirect()->intended($this->redirectPath());
-            }
+        ], $request->filled('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->intended($this->redirectPath());
         }
 
         return redirect()->back()
-            ->withInput($request->only($this->username(), 'remember'))
+            ->withInput($request->only('email', 'remember'))
             ->withErrors([
-                $this->username() => \Lang::get('auth.failed'),
+                'email' => trans('auth.failed'),
             ]);
     }
 
     public function showLoginForm(): \Illuminate\View\View
     {
+        if (Auth::check()) {
+            return redirect($this->redirectPath());
+        }
         return view('auth.login');
     }
 }
