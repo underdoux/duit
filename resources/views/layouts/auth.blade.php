@@ -12,12 +12,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Styles -->
-    <link href="{{ asset('css/login.css') }}" rel="stylesheet">
+    <link href="{{ url('/css/login.css') }}" rel="stylesheet">
     
     <!-- Scripts -->
     <script>
         window.Laravel = {!! json_encode([
             'csrfToken' => csrf_token(),
+            'baseUrl' => url('/'),
         ]) !!};
     </script>
 </head>

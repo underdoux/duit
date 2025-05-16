@@ -15,7 +15,7 @@
             <p>Welcome back! Please sign in to continue.</p>
         </div>
 
-        <form class="login-form" method="POST" action="{{ url('/duit/login') }}">
+        <form class="login-form" method="POST" action="{{ url('/duit/authenticate') }}">
             {{ csrf_field() }}
 
             <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
